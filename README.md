@@ -1,4 +1,4 @@
-# matmasview
+# MatMasView
 
 Matlab code to interactively view MAS simulation results
 
