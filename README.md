@@ -1,6 +1,6 @@
 # MatMasView
 
-Matlab code to interactively view MAS simulation results (www.predsci.com).
+Matlab code to interactively view MAS simulation results (www.predsci.com/mas).
 
 The code can also make time-dependent movies of a run.
 
