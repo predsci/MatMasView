@@ -8,23 +8,23 @@ clear all;
 
 global ridx pidx tidx;
 global rval pval tval r1dval t1dval p1dval;
-global sliceid draw_cut_lines shading_str id;
+global sliceid draw_cut_lines shading_str id set_clim;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%   INPUT PARAMETERS    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-run_tag     = 'an23_valid_v3_pcg_sc1';
-%datasetdir = '/home/sumseq/Dropbox/Work/Conferences/2023_ASTRONUM/data/runs/validation/an23_valid_v3_stsvisc_sc1_rkg2/';
-%datasetdir = '/home/sumseq/Dropbox/Work/Conferences/2023_ASTRONUM/data/runs/validation/an23_valid_v3_pcg_sc1/';
-datasetdir = '/home/sumseq/Dropbox/Work/Conferences/2023_ASTRONUM/data/runs/validation/an23_valid_v3_stsvisc_scauto_rkl2/';
-%datasetdir = '/home/sumseq/Dropbox/Work/Conferences/2023_ASTRONUM/data/runs/validation/an23_valid_v2_stsvisc_scauto_rkl2/';
-%datasetdir = '/home/sumseq/Dropbox/Work/Conferences/2023_ASTRONUM/data/runs/validation/an23_valid_v2_stsvisc_sc1_rkl2/';
-%datasetdir = '/home/sumseq/Dropbox/Work/Conferences/2023_ASTRONUM/data/runs/validation/an23_valid_stsvisc_sc1_rkl2/';
-%datasetdir = '/home/sumseq/Dropbox/Work/Conferences/2023_ASTRONUM/data/runs/validation/an23_valid_stsvisc_scauto/';
-%datasetdir = '/home/sumseq/Dropbox/Work/Conferences/2023_ASTRONUM/data/runs/validation/an23_valid_stsvisc_sc1/';
-%datasetdir = '/home/sumseq/Dropbox/Work/Conferences/2023_ASTRONUM/data/runs/validation/an23_valid_pcg_rs/';
+%run_tag     = 'an23_valid_v3_pcg_sc1';
+%run_tag     = 'an23_valid_v3_pcg_scauto';
+run_tag     = 'an23_valid_v3_stsall_sc1_rkl2';  %2 only CRASH
+%run_tag     = 'an23_valid_v3_stsall_scauto_rkl2';
+%run_tag     = 'an23_valid_v3_stsall_sc1_rkg2';
+%run_tag     = 'an23_valid_v3_stsall_scauto_rkg2';
 
+datasetdir = ['/home/sumseq/Dropbox/Work/Conferences/2023_ASTRONUM/data/runs/validation/' run_tag '/'];
+
+
+%datasetdir ='/data/STS/FD/an23/fd_stsall_rkl2_scauto/';
 %datasetdir  = '/home/Dropbox/Work/Publications/2023_MAS_STDPAR/data/delta/output/';
 %datasetdir  = '/home/Dropbox/PSI/MAS/MAS_SVN/trunk/testsuite/poly_3d_ip_drive/reference/';
 %datasetdir  = '/home/sumseq/Desktop/an16_files/astronum_rlx20/';
@@ -34,9 +34,10 @@ datasetdir = '/home/sumseq/Dropbox/Work/Conferences/2023_ASTRONUM/data/runs/vali
 %datasetdir  = '/home/sumseq/Desktop/an16_files/relaxation_to_20_mxwv/astronum_rlx20_vp_mxwv/';
 %datasetdir  = '/home/sumseq/Desktop/adapt_relax_full_init_and_final/';
 %field_vec   = {'vr' 'rho' 't' 'vt' 'vp' 'br' 'bt' 'bp' 'jr' 'jt' 'jp'};
-field_vec   = {'br'};
+field_vec   = {'jp'};
 idx_start   = 3;  %Starting file index.
 idx_end     = 3; %Ending file index.
+idx_n = idx_end-idx_start+1;
 id=idx_start;
 
 save_movie = 0;   %Save pngs of movie and combine into mov.
@@ -54,24 +55,24 @@ init_view='P';
 shading_str='interp';%'flat';
 helio_scaling=0;   %Scale fields by thier solar wind trends (R/R0, etc).
 R0 = 214.9395;  %R0 for the helio scaling (1AU in MAS units).
-log_scale=1;
+log_scale=0;
 
 tdview=[-20 20];%[29 -38];%[-171 -28];%[-69 30];
 tdzoom=0.75;%1.5;
 
-rval=1.0087;%1.03;%1.0082;%.0117;
-tval=1.2265;%1.2935;%1.3;%1.896;%pi/2;%1.1844;%-9999;
+rval=1.03;%1.03;%1.0082;%.0117;
+tval=1.20;%1.2935;%1.3;%1.896;%pi/2;%1.1844;%-9999;
 pval=5.9062;%5.9324;%5.9;%-9999;%2.5237;%2.404;%-9999;
 
 %Set domain to plot (set to 0 to do full domain):
-r_cut_domain_phys = [1 1.5];%1.041];%[1 20];%[1 1.2];%T:[1.3 10];%[1 1.5];%[1 1.5];
-t_cut_domain_phys = 0;%[1.15 1.45];%[pi/2 3*pi/4];%0;%[0 pi/1.8];
-p_cut_domain_phys = 0;%[5.85 5.95];%[0 2*pi/3];% 4*pi/3];% 2*pi];%0;%[2 3];%0 2*pi];
+r_cut_domain_phys = [1 1.1];%1.041];%[1 20];%[1 1.2];%T:[1.3 10];%[1 1.5];%[1 1.5];
+t_cut_domain_phys = [1.15 1.45];%[pi/2 3*pi/4];%0;%[0 pi/1.8];
+p_cut_domain_phys = [5.85 5.95];%[0 2*pi/3];% 4*pi/3];% 2*pi];%0;%[2 3];%0 2*pi];
 
 %Set clim (overwritten if set_clim=1):
-set_clim = 1;     %Set color range to be fixed at min/max (1) or manual (0)
-cmin=-5e-9;%jp-18;%-19.5;%0;%0;%-20;%T:1.27;%0;
-cmax=5e-9;%25*3.171e-11;%500;%-19;%1e-19;%10;%jp-9;%-17;%240;%2;%-16;%T:2.05;%2.5;
+set_clim = 0;     %Set color range to be fixed at min/max (1) or manual (0)
+cmin=-4;%jp-18;%-19.5;%0;%0;%-20;%T:1.27;%0;
+cmax=4;%25*3.171e-11;%500;%-19;%1e-19;%10;%jp-9;%-17;%240;%2;%-16;%T:2.05;%2.5;
 
 %Select if want plot values to be stretched to uniform (1) or not (0):
 r_uniform = 0;
@@ -96,7 +97,7 @@ cmap_val_n=256;
 if(file_name(1) == 't') 
    field_name  = 'Temperature (MK)';
    field_units = 'MK';
-   field_scale = 28;
+   field_scale = 28.0706672;
    cmap = hot(cmap_val_n);
 elseif(strcmp(file_name(1:2),'br')) 
    field_name  = 'Magnetic Field (r)';
@@ -105,17 +106,17 @@ elseif(strcmp(file_name(1:2),'br'))
    else
      field_units = 'Gauss';
    end
-   field_scale = 2.21;
+   field_scale = 2.20689140;
    cmap = psi_pal_bluered;
 elseif(strcmp(file_name(1:2),'bt')) 
    field_name  = 'Magnetic Field (\theta)';
    field_units = 'Gauss';
-   field_scale = 2.21;
+   field_scale = 2.20689140;
    cmap = psi_pal_bluered;
 elseif(strcmp(file_name(1:2),'bp')) 
    field_name  = 'Magnetic Field (\phi)';
    field_units = 'Gauss';
-   field_scale = 2.21;
+   field_scale = 2.20689140;
    cmap = psi_pal_bluered;
 elseif(strcmp(file_name(1:2),'ar')) 
    field_name  = 'Vector Potential (r)';
@@ -135,17 +136,17 @@ elseif(strcmp(file_name(1:2),'ap'))
 elseif(strcmp(file_name(1:2),'vr')) 
    field_name  = 'Velocity (r)';
    field_units = 'km/s';
-   field_scale = 481.4;
+   field_scale = 481.37106736;
    cmap = psi_pal_bluered;%jet(cmap_val_n);
 elseif(strcmp(file_name(1:2),'vt')) 
    field_name  = 'Velocity (\theta)';
    field_units = 'km/s';
-   field_scale = 481.4;
+   field_scale = 481.37106736;
    cmap = psi_pal_bluered;
 elseif(strcmp(file_name(1:2),'vp')) 
    field_name  = 'Velocity (\phi)';
    field_units = 'km/s';
-   field_scale = 481.4;
+   field_scale = 481.37106736;
    cmap = psi_pal_bluered;%psi_pal_bluered;
 elseif(strcmp(file_name(1:3),'rho')) 
    field_name  = 'Density';
@@ -159,17 +160,17 @@ elseif(strcmp(file_name(1:3),'rho'))
 elseif(strcmp(file_name(1),'p')) 
    field_name  = 'Pressure';
    field_units = 'dyn/cm^2';   
-   field_scale = 0.388;
+   field_scale = 0.38757170;
    cmap = psi_pal_banded;
 elseif(strcmp(file_name(1),'j')) 
    field_name  = 'Current Density';
    field_units = 'stat-Amp/cm^2';   
-   field_scale = 3.171e-11;
+   field_scale = 0.07564541;
    cmap = psi_pal_bluered;
 elseif(strcmp(file_name(1),'A')) 
    field_name  = '|A|';
    field_units = 'Gauss-cm';   
-   field_scale = 2.21;
+   field_scale = 2.20689140;
    cmap = jet(cmap_val_n);
 else
    field_name  = 'Unknown';
@@ -383,7 +384,7 @@ axis vis3d;
 caxis([cmin cmax]);
 cb = colorbar;
 colormap(cmap);
-cblabel(field_name,'FontSize',fsize);
+cblabel([field_name ' (' field_units ')'],'FontSize',fsize);
 set(cb,'FontSize',fsize);
 grid on;
 %axis off; %%%%%
@@ -392,11 +393,11 @@ camzoom(tdzoom);
 %camdolly(-1,0,0)
 %view(3)
 
-
-dim = [0.1 0.8 0.1 0.1];
-str = ['Frame: ' num2str(idx_start,'%03d')];
-plot3d_annot=annotation('textbox',dim,'String',str,'FitBoxToText','on','Color','w','FontSize',20,'LineWidth',2,'EdgeColor','w');
-
+if (idx_n>1)
+  dim = [0.1 0.8 0.1 0.1];
+  str = ['Frame: ' num2str(idx_start,'%03d')];
+  plot3d_annot=annotation('textbox',dim,'String',str,'FitBoxToText','on','Color','w','FontSize',20,'LineWidth',2,'EdgeColor','w');
+end
 
 %Set view to be on normal vector of center:
 %if(fulldomain==0)    
@@ -451,15 +452,19 @@ elseif(init_view=='P')
   startDragFncP;
 end
 
-set(fig_cube,    'Name',[field_name, '  Frame: ' num2str(idx_start,'%03d')])
+if (idx_n>1)
+    set(fig_cube,    'Name',[field_name, '  Frame: ' num2str(idx_start,'%03d')])
+else
+    set(fig_cube,    'Name',field_name)
+end
 str_tmp=get(plot1d_title,'String');
-set(plot1d_title,'String',[str_tmp '  Frame: ' num2str(id,'%03d')]);
-set(fig_1Dplot,  'Name',[str_tmp '  Frame: ' num2str(id,'%03d')])
+set(plot1d_title,'String',str_tmp);
+set(fig_1Dplot,  'Name',str_tmp)
 
 
 str_tmp=get(plot2d_title,'String');
-set(plot2d_title,'String',[str_tmp '  Frame: ' num2str(id,'%03d')]);
-set(fig_2Dslice, 'Name',[str_tmp '  Frame: ' num2str(id,'%03d')]);
+set(plot2d_title,'String',str_tmp);
+set(fig_2Dslice, 'Name',str_tmp);
 
 
 
@@ -549,7 +554,9 @@ end
    end
      
    set(fig_cube,    'Name',[field_name, '  Frame: ' num2str(id,'%03d')])
-   set(plot3d_annot,'String',['Frame: ' num2str(id,'%03d')]);   
+   if(idx_n>1)
+     set(plot3d_annot,'String',['Frame: ' num2str(id,'%03d')]);   
+   end
 
    str_tmp=get(plot1d_title,'String');
    str_tmp(end-2:end)=num2str(id,'%03d');

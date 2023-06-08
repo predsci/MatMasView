@@ -26,7 +26,7 @@ function draggingFncP(hfig,events)
    evalin('base','set(plot_slice,''CData'',fliplr(squeeze(MAS_DATA_CUT(pidx,:,:))''),''XData'',fliplr(Y_cut''),''YData'',fliplr(X_cut''))');
    evalin('base','title(axis_slice,[''\phi='',num2str(pval)],''Color'',''w'');');
    evalin('base','set(fig_2Dslice, ''Name'',[field_name,'' R-\theta \phi='',num2str(pval)]);');
-         
+
    %Set YDATA in 1D plots (plot selection done elsewhere)
    evalin('base','set(plot_1D,''YData'',squeeze(MAS_DATA_CUT(pidx,tidx,:)))');
 %   evalin('base','set(axis_1Dplot,''YLim'',[min(squeeze(MAS_DATA_CUT(pidx,tidx,:))) max(squeeze(MAS_DATA_CUT(pidx,tidx,:)))] );');
