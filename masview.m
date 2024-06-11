@@ -1,8 +1,7 @@
 %MAT_MAS_VIEW_GEN:
-%Visualize a 3D MAS output hdf
+%Visualize a 3D MAS output (hdf4)
 %Predictive Science Inc.
 
-%cleanup;
 close all;
 clear all;
 
@@ -14,36 +13,17 @@ global sliceid draw_cut_lines shading_str id set_clim;
 %%%%%%%%%%%%%%%   INPUT PARAMETERS    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%run_tag     = 'an23_valid_v3_pcg_sc1';
-%run_tag     = 'an23_valid_v3_pcg_scauto';
-run_tag     = 'an23_valid_v3_stsall_sc1_rkl2';  %2 only CRASH
-%run_tag     = 'an23_valid_v3_stsall_scauto_rkl2';
-%run_tag     = 'an23_valid_v3_stsall_sc1_rkg2';
-%run_tag     = 'an23_valid_v3_stsall_scauto_rkg2';
+run_tag     = 'run_name';  
 
-datasetdir = ['/home/sumseq/Dropbox/Work/Conferences/2023_ASTRONUM/data/runs/validation/' run_tag '/'];
+datasetdir = 'PATH-TO-DATA';
 
-
-%datasetdir ='/data/STS/FD/an23/fd_stsall_rkl2_scauto/';
-%datasetdir  = '/home/Dropbox/Work/Publications/2023_MAS_STDPAR/data/delta/output/';
-%datasetdir  = '/home/Dropbox/PSI/MAS/MAS_SVN/trunk/testsuite/poly_3d_ip_drive/reference/';
-%datasetdir  = '/home/sumseq/Desktop/an16_files/astronum_rlx20/';
-%datasetdir  = '/home/sumseq/Desktop/an16_stsvisc_jp/sts/';
-%datasetdir  = ['/home/sumseq/Dropbox/PSI/MAS/tests/bc_interp_tests/' run_tag '/'];
-%datasetdir  = '/data/AN16/astronum_rlx20_sts/';
-%datasetdir  = '/home/sumseq/Desktop/an16_files/relaxation_to_20_mxwv/astronum_rlx20_vp_mxwv/';
-%datasetdir  = '/home/sumseq/Desktop/adapt_relax_full_init_and_final/';
-%field_vec   = {'vr' 'rho' 't' 'vt' 'vp' 'br' 'bt' 'bp' 'jr' 'jt' 'jp'};
-field_vec   = {'jp'};
+field_vec   = {'vr' 'rho' 't' 'vt' 'vp' 'br' 'bt' 'bp' 'jr' 'jt' 'jp'};
 idx_start   = 3;  %Starting file index.
-idx_end     = 3; %Ending file index.
-idx_n = idx_end-idx_start+1;
-id=idx_start;
+idx_end     = 3;  %Ending file index.
 
-save_movie = 0;   %Save pngs of movie and combine into mov.
 show_movie = 1;   %Show movie while saving.
+save_movie = 1;   %Save pngs of movie.
 pause_first_frame=0; %Pause after showing first frame to allow positioning b4 mov.
-
 
 showmesh   = 0;     %Show grid on surfaces
 fsize      = 18;    %Font size of figures (sometimes only shown at saves/prints)
@@ -52,32 +32,38 @@ skp        = 1;     %Data skip for slices in 3D plot.
 show_init_rot  = 0; %Show initial rotation movie for 3D view.
 draw_cut_lines = 1; %Draw cut lines on higher dimenion plots.
 init_view='P';
-shading_str='interp';%'flat';
+shading_str='interp';   % or 'flat';
 helio_scaling=0;   %Scale fields by thier solar wind trends (R/R0, etc).
 R0 = 214.9395;  %R0 for the helio scaling (1AU in MAS units).
 log_scale=0;
 
-tdview=[-20 20];%[29 -38];%[-171 -28];%[-69 30];
-tdzoom=0.75;%1.5;
+tdview=[-20 20];       
+tdzoom=0.75;
 
-rval=1.03;%1.03;%1.0082;%.0117;
-tval=1.20;%1.2935;%1.3;%1.896;%pi/2;%1.1844;%-9999;
-pval=5.9062;%5.9324;%5.9;%-9999;%2.5237;%2.404;%-9999;
+rval=1.03;
+tval=1.20;
+pval=5.9062;
 
 %Set domain to plot (set to 0 to do full domain):
-r_cut_domain_phys = [1 1.1];%1.041];%[1 20];%[1 1.2];%T:[1.3 10];%[1 1.5];%[1 1.5];
-t_cut_domain_phys = [1.15 1.45];%[pi/2 3*pi/4];%0;%[0 pi/1.8];
-p_cut_domain_phys = [5.85 5.95];%[0 2*pi/3];% 4*pi/3];% 2*pi];%0;%[2 3];%0 2*pi];
+r_cut_domain_phys = [1 1.1];
+t_cut_domain_phys = [1.15 1.45];
+p_cut_domain_phys = [5.85 5.95];
 
 %Set clim (overwritten if set_clim=1):
 set_clim = 0;     %Set color range to be fixed at min/max (1) or manual (0)
-cmin=-4;%jp-18;%-19.5;%0;%0;%-20;%T:1.27;%0;
-cmax=4;%25*3.171e-11;%500;%-19;%1e-19;%10;%jp-9;%-17;%240;%2;%-16;%T:2.05;%2.5;
+cmin=-4;
+cmax=4;
 
 %Select if want plot values to be stretched to uniform (1) or not (0):
 r_uniform = 0;
 t_uniform = 0;
 p_uniform = 0;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+idx_n = idx_end-idx_start+1;
+id=idx_start;
 
 scrsz = get(0,'ScreenSize');
 loadpsipals;
@@ -188,14 +174,7 @@ pvec = double(MAS_grid_info.SDS.Dims(1).Scale);
 tvec = double(MAS_grid_info.SDS.Dims(2).Scale);
 rvec = double(MAS_grid_info.SDS.Dims(3).Scale);
 
-
-%[MAS_DATA,pvec,tvec,rvec]=get_mas_vec_mag_a([datasetdir 'ar001.hdf'],...
-%                                            [datasetdir 'at001.hdf'],...
-%                                            [datasetdir 'ap001.hdf']);
-
-
 %Thin out data by skp factor:
-
 MAS_DATA = MAS_DATA(1:skp:end,1:skp:end,1:skp:end);
 rvec=rvec(1:skp:end);
 tvec=tvec(1:skp:end);
@@ -273,11 +252,6 @@ rval = rvec_cut(ridx);
 tval = tvec_cut(tidx);
 pval = pvec_cut(pidx);
 
-%r1didx = ridx;
-%t1didx = tidx;
-%p1didx = pidx;
-
-
 %Get resolution of cut cube:
 nr_cut = length(rvec_cut);
 nt_cut = length(tvec_cut);
@@ -293,19 +267,6 @@ Z = R.*cos(T);
 
 %Extract portion wanted and get into proper units:
 MAS_DATA_CUT = field_scale.*MAS_DATA(p_cut_range,t_cut_range,r_cut_range);
-
-%Convert vectors to Cartesean:
-%if(b or v, then if x...)
-%BX = sin(T(2:end-1,2:end-1,2:end-1)).*cos(P(2:end-1,2:end-1,2:end-1)).*BRcut + ...
-%     cos(T(2:end-1,2:end-1,2:end-1)).*cos(P(2:end-1,2:end-1,2:end-1)).*BTcut + ...
-%              -sin(P(2:end-1,2:end-1,2:end-1)).*BPcut;
-%BY = sin(T(2:end-1,2:end-1,2:end-1)).*sin(P(2:end-1,2:end-1,2:end-1)).*BRcut + ...
-%     cos(T(2:end-1,2:end-1,2:end-1)).*sin(P(2:end-1,2:end-1,2:end-1)).*BTcut + ...
-%               cos(P(2:end-1,2:end-1,2:end-1)).*BPcut;
-%BZ =  cos(T(2:end-1,2:end-1,2:end-1)).*BRcut + ...
-%     -sin(T(2:end-1,2:end-1,2:end-1)).*BTcut;
-
-%clear MAS_DATA;
 
 if(helio_scaling==1)
   if(strcmp(file_name(1:3),'rho') || strcmp(file_name(1),'b'))
@@ -343,8 +304,6 @@ end
 %%%%%%%%PLOT CUTS IN 3D:
 fig_cube   = figure;
 set(fig_cube,'Position',[scrsz(4)/8 scrsz(4)/2 scrsz(4)/2 scrsz(4)/2],'NumberTitle','off','Color','k');          
-%set(fig_cube,'Name',[field_name, ' frame: ' file_name],'Position',[2 2 1000 800],'NumberTitle','off','Color','k');          
-%customPos(3, 1, 1);
 set(fig_cube,'InvertHardCopy','off');
 
 
@@ -387,27 +346,14 @@ colormap(cmap);
 cblabel([field_name ' (' field_units ')'],'FontSize',fsize);
 set(cb,'FontSize',fsize);
 grid on;
-%axis off; %%%%%
 view(tdview);
 camzoom(tdzoom);
-%camdolly(-1,0,0)
-%view(3)
 
 if (idx_n>1)
   dim = [0.1 0.8 0.1 0.1];
   str = ['Frame: ' num2str(idx_start,'%03d')];
   plot3d_annot=annotation('textbox',dim,'String',str,'FitBoxToText','on','Color','w','FontSize',20,'LineWidth',2,'EdgeColor','w');
 end
-
-%Set view to be on normal vector of center:
-%if(fulldomain==0)    
-%   cameratoolbar('Show');
-%   cameratoolbar('SetMode','orbit');
-%   cameratoolbar('SetCoordSys','none');
-%   camup([cos(pvec_cut(pidx))*sin(tvec_cut(tidx)) ...
-%          sin(pvec_cut(pidx))*sin(tvec_cut(tidx)) ...
-%          cos(tvec_cut(tidx))])
-%end
 
 if(show_init_rot==1)
 %Rotation animation
@@ -418,7 +364,7 @@ for i=1:5:360
    fnamemovie3d = ['movies/' run_tag '_' field '_' num2str(idx_start) '_3D_rotation2_',num2str(idx,'%06d'),'.png'];
    screen2png(fig_cube, fnamemovie3d,'-r96');
    idx=idx+1;
-   %pause(0.01)
+   pause(0.01)
 end
 end
 
@@ -441,8 +387,6 @@ set(fig_1Dplot,'NumberTitle','off','Color',[0.90 0.90 0.95],'Position',...
 set(fig_1Dplot,'InvertHardCopy','off');
 axis_1Dplot=axes();
 
-
-
 %Start drag function on initial view to plot first frame:
 if(init_view=='R')
   startDragFncR;
@@ -461,18 +405,11 @@ str_tmp=get(plot1d_title,'String');
 set(plot1d_title,'String',str_tmp);
 set(fig_1Dplot,  'Name',str_tmp)
 
-
 str_tmp=get(plot2d_title,'String');
 set(plot2d_title,'String',str_tmp);
 set(fig_2Dslice, 'Name',str_tmp);
 
-
-
-%if(idx_end~=idx_start)
-
 %%%%%%%%%%%%%%%%%%%%%%%%START ANIMATION%%%%%%%%%%%%%%%%%%%%
-
-
 
 if(show_movie==0)
   set(fig_1Dplot, 'Visible','off');
@@ -502,10 +439,6 @@ for id = idx_start:idx_end
 
    %Thin out data by skp factor:
    MAS_DATA = MAS_DATA(1:skp:end,1:skp:end,1:skp:end);
-
-%  [MAS_DATA,pvec,tvec,rvec]=get_mas_vec_mag_a([datasetdir 'ar' num2str(id,'%03d') '.hdf'],...
-%                                              [datasetdir 'at' num2str(id,'%03d') '.hdf'],...
-%                                              [datasetdir 'ap' num2str(id,'%03d') '.hdf']);
 
   %Extract portion wanted and get into proper units:
    MAS_DATA_CUT = field_scale.*MAS_DATA(p_cut_range,t_cut_range,r_cut_range);
@@ -562,8 +495,7 @@ end
    str_tmp(end-2:end)=num2str(id,'%03d');
    set(plot1d_title,'String',str_tmp);
    set(fig_1Dplot,  'Name',str_tmp)
-
-
+   
    str_tmp=get(plot2d_title,'String');
    str_tmp(end-2:end)=num2str(id,'%03d');
    set(plot2d_title,'String',str_tmp);
@@ -572,61 +504,16 @@ end
    drawnow;
 
    if(save_movie==1)
-   screen2png(fig_cube,   fnamemovie3d,'-r96');
-   screen2png(fig_2Dslice,fnamemovie2d,'-r96');
-   screen2png(fig_1Dplot, fnamemovie1d,'-r96');
+     screen2png(fig_cube,   fnamemovie3d,'-r96');
+     screen2png(fig_2Dslice,fnamemovie2d,'-r96');
+     screen2png(fig_1Dplot, fnamemovie1d,'-r96');
    end
-
-
-end
-
-if(save_movie==1)
-
-fname_base=['movies/' run_tag '_' field '_' num2str(idx_start) '-' num2str(idx_end)];
-
-disp('Making movie (mov):');
-
-fnamemovie3din=[fname_base '_3D_%06d.png'];
-fnamemovie2din=[fname_base '_2D_%06d.png'];
-fnamemovie1din=[fname_base '_1D_%06d.png'];
-
-%fnamemovie3dout=[fname_base '_3D.mov'];
-%fnamemovie2dout=[fname_base '_2D.mov'];
-%fnamemovie1dout=[fname_base '_1D.mov'];
-
-%system(['avconv -y -loglevel panic -f image2 -r 10 -i ''' fnamemovie3din ''' -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -codec:v libx264 ' fnamemovie3dout]);
-%system(['avconv -y -loglevel panic -f image2 -r 10 -i ''' fnamemovie2din ''' -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -codec:v libx264 ' fnamemovie2dout]);
-%system(['avconv -y -loglevel panic -f image2 -r 10 -i ''' fnamemovie1din ''' -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -codec:v libx264 ' fnamemovie1dout]);
-
-%system(['rm movies/*.png']);
-
-% disp(' ');
-% disp('Making movie (gif):');
-% 
-% fnamemovie3din=[fname_base '_3D_*.png'];
-% fnamemovie2din=[fname_base '_2D_*.png'];
-% fnamemovie1din=[fname_base '_1D_*.png'];
-% 
-% fnamemovie3dout=[fname_base '_3D.gif'];
-% fnamemovie2dout=[fname_base '_2D.gif'];
-% fnamemovie1dout=[fname_base '_1D.gif'];
-% 
-% %Want 5 second movie...
-% movie_length=5;
-% delay_val=ceil(100*movie_length/id);
-% 
-% system(['convert -delay ' num2str(delay_val) ' ' fnamemovie3din ' ' fnamemovie3dout]);
-% system(['convert -delay ' num2str(delay_val) ' ' fnamemovie2din ' ' fnamemovie2dout]);
-% system(['convert -delay ' num2str(delay_val) ' ' fnamemovie1din ' ' fnamemovie1dout]);
 
 end
 
 disp('Done!');
 
-
-
 end
-
 
 return
 
